@@ -1,5 +1,6 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-module Html.Internal where
+module Blogen.Html.Internal where
+import GHC.Natural (Natural)
 
 -- * Types
 
@@ -9,6 +10,12 @@ newtype Html = Html String
 -- | Html type representing structures such as headings and paragraphs to
 --   be embedded into an html document.
 newtype Structure = Structure String
+
+instance Semigroup Structure where
+  Structure a <> Structure b = Structure (a <> b)
+
+instance Monoid Structure where
+  mempty = empty_
 
 -- | Html type alias for Title.
 type Title = String
@@ -34,6 +41,10 @@ p_ = Structure . el "p" . escape
 h1_ :: String -> Structure
 h1_ = Structure . el "h1" . escape
 
+-- | Wraps content in a section header tag.
+h_ :: Natural -> String -> Structure
+h_ n = Structure . el ("h" <> show n) . escape
+
 -- | Wraps content in a pre tag.
 code_ :: String -> Structure
 code_ = Structure . el "pre" . escape
@@ -46,10 +57,16 @@ ul_ structureList = Structure (el "ul" (getStructureString (toListStructure stru
 ol_ :: [Structure] -> Structure
 ol_ structureList = Structure (el "ol" (getStructureString (toListStructure structureList)))
 
--- | Combines structure a and structure b into a single structure.
---   In effect, this is string concatination.
-append_ :: Structure -> Structure -> Structure
-append_ (Structure a) (Structure b) = Structure (a <> b)
+empty_ :: Structure
+empty_ = Structure ""
+
+concatStructure :: [Structure] -> Structure
+concatStructure = mconcat
+
+-- -- | Combines structure a and structure b into a single structure.
+-- --   In effect, this is string concatination.
+-- append_ :: Structure -> Structure -> Structure
+-- append_ (Structure a) (Structure b) = Structure (a <> b)
 
 -- * Render
 
