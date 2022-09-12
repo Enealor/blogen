@@ -9,7 +9,6 @@ import qualified Blogen.Html
 import qualified Blogen.Markup
 import           System.Directory   (doesFileExist)
 import           System.Environment (getArgs)
-import           System.IO          (getContents, readFile, writeFile)
 
 process :: Blogen.Html.Title -> String -> String
 process title content = Blogen.Html.render (Blogen.Convert.convert title (Blogen.Markup.parse content))
