@@ -37,15 +37,19 @@ library
                 Blogen.Html.Internal
             Blogen.Markup
 
-    build-depends:    base ^>=4.14.3.0, directory
+    build-depends:
+        base ^>=4.14.3.0
     hs-source-dirs:   src
 
 executable blogen
     import:     common-settings
     main-is:    Main.hs
-
+    other-modules:
+        OptParse
     build-depends:
-        base ^>=4.14.3.0,
-        blogen
+        base ^>=4.14.3.0
+      , optparse-applicative
+      , directory
+      , blogen
 
     hs-source-dirs:   app
