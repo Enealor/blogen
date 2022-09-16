@@ -11,6 +11,12 @@ module Blogen.Html
   , code_
   , empty_
   , concatStructure
+  , Content
+  , txt_
+  , img_
+  , link_
+  , b_
+  , i_
   , render
   )
   where

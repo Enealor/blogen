@@ -11,6 +11,9 @@ newtype Html = Html String
 --   be embedded into an html document.
 newtype Structure = Structure String
 
+-- | Html type representing the content that can be passed to a structure.
+newtype Content = Content String
+
 instance Semigroup Structure where
   Structure a <> Structure b = Structure (a <> b)
 
@@ -34,16 +37,16 @@ html_ title content =
     )
 
 -- | Wraps content in a p tag.
-p_ :: String -> Structure
-p_ = Structure . el "p" . escape
+p_ :: Content -> Structure
+p_ = Structure . el "p" . getContentString
 
 -- | Wraps content in a h1 tag.
-h1_ :: String -> Structure
-h1_ = Structure . el "h1" . escape
+h1_ :: Content -> Structure
+h1_ = Structure . el "h1" . getContentString
 
 -- | Wraps content in a section header tag.
-h_ :: Natural -> String -> Structure
-h_ n = Structure . el ("h" <> show n) . escape
+h_ :: Natural -> Content -> Structure
+h_ n = Structure . el ("h" <> show n) . getContentString
 
 -- | Wraps content in a pre tag.
 code_ :: String -> Structure
@@ -56,6 +59,27 @@ ul_ structureList = Structure (el "ul" (getStructureString (toListStructure stru
 -- | Converts a list of structures into an ordered list structure.
 ol_ :: [Structure] -> Structure
 ol_ structureList = Structure (el "ol" (getStructureString (toListStructure structureList)))
+
+-- | Turns a string into Html content
+txt_ :: String -> Content
+txt_ = Content . escape
+
+b_ :: Content -> Content
+b_ (Content content) = Content (el "b" content)
+
+i_ :: Content -> Content
+i_ (Content content) = Content (el "i" content)
+
+img_ :: FilePath -> Content -> Content
+img_ source altText = Content ("<img src=\"" <> escape source <> "\" alt=\"" <> getContentString altText <> "\">")
+
+link_ :: FilePath -> Content -> Content
+link_ path content =
+  Content $
+    elAttr
+      "a"
+      ("href=\"" <> escape path <> "\"")
+      (getContentString content)
 
 empty_ :: Structure
 empty_ = Structure ""
@@ -80,10 +104,19 @@ render (Html a) = a
 getStructureString :: Structure -> String
 getStructureString (Structure a) = a
 
+-- | Gets string value from a Content.
+getContentString :: Content -> String
+getContentString (Content a) = a
+
 -- | Wraps content in the provided tag.
---   e.g. tag "foo" "bar" = "<foo>bar</foo>"
+--   e.g. el "foo" "bar" = "<foo>bar</foo>"
 el :: String -> String -> String
 el tagName content = "<" <> tagName <> ">" <> content <> "</" <> tagName <> ">"
+
+-- | Wraps content in the provided tag with attributes.
+--   e.g. elAttr "foo" "href=\"..\"" "bar" = "<foo href=\"..\">bar</foo>"
+elAttr :: String -> String -> String -> String
+elAttr tagName tagAttrs content = "<" <> tagName <> " " <> tagAttrs <> ">" <> content <> "</" <> tagName <> ">"
 
 -- | Replaces html specific characters with "safe" versions.
 escape :: String -> String
