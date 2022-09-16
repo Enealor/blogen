@@ -1,0 +1,8 @@
+* Code examples
+
+> Code examples are just verbatim text.
+
+> import qualified Blogen
+> 
+> main :: IO ()
+> main = Blogen.main
