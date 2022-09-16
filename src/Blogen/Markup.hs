@@ -32,6 +32,22 @@ parseLines context txts =
     ('*' : ' ' : line) : rest ->
       maybe id (:) context (Heading 1 (trim line) : parseLines Nothing rest)
 
+    -- This is ugly but simple.
+    ('*' : '*' : ' ' : line) : rest ->
+      maybe id (:) context (Heading 2 (trim line) : parseLines Nothing rest)
+
+    ('*' : '*' : '*' : ' ' : line) : rest ->
+      maybe id (:) context (Heading 3 (trim line) : parseLines Nothing rest)
+
+    ('*' : '*' : '*' : '*' : ' ' : line) : rest ->
+      maybe id (:) context (Heading 4 (trim line) : parseLines Nothing rest)
+
+    ('*' : '*' : '*' : '*' : '*' : ' ' : line) : rest ->
+      maybe id (:) context (Heading 5 (trim line) : parseLines Nothing rest)
+
+    ('*' : '*' : '*' : '*' : '*' : '*' : ' ' : line) : rest ->
+      maybe id (:) context (Heading 6 (trim line) : parseLines Nothing rest)
+
     -- Unordered list case
     ('-' : ' ' : line) : rest ->
       case context of
