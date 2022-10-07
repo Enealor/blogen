@@ -1,10 +1,10 @@
 module OptParse
-  ( Options(..)
-  , SingleInput(..)
-  , SingleOutput(..)
-  , parse
+  ( Options (..),
+    SingleInput (..),
+    SingleOutput (..),
+    parse,
   )
-  where
+where
 
 import           Data.Maybe          (fromMaybe)
 import           Options.Applicative (Parser, ParserInfo, command, execParser,
@@ -15,17 +15,17 @@ import           Options.Applicative (Parser, ParserInfo, command, execParser,
 data Options
   = ConvertSingle SingleInput SingleOutput Bool
   | ConvertDir FilePath FilePath Bool
-  deriving Show
+  deriving (Show)
 
 data SingleInput
   = Stdin
   | InputFile FilePath
-  deriving Show
+  deriving (Show)
 
 data SingleOutput
   = Stdout
   | OutputFile FilePath
-  deriving Show
+  deriving (Show)
 
 -- Single file parser
 pInputFile :: Parser SingleInput
@@ -34,9 +34,9 @@ pInputFile = fmap InputFile parser
     parser =
       strOption
         ( long "input"
-          <> short 'i'
-          <> metavar "FILE"
-          <> help "Input file"
+            <> short 'i'
+            <> metavar "FILE"
+            <> help "Input file"
         )
 
 pOutputFile :: Parser SingleOutput
@@ -45,9 +45,9 @@ pOutputFile = OutputFile <$> parser -- fmap and <$> are the same
     parser =
       strOption
         ( long "output"
-          <> short 'o'
-          <> metavar "FILE"
-          <> help "Output file"
+            <> short 'o'
+            <> metavar "FILE"
+            <> help "Output file"
         )
 
 pSingleInput :: Parser SingleInput
@@ -62,28 +62,28 @@ pSingleOutput =
 
 pInputDir :: Parser FilePath
 pInputDir =
-      strOption
-        ( long "input"
-          <> short 'i'
-          <> metavar "DIR"
-          <> help "Input directory"
-        )
+  strOption
+    ( long "input"
+        <> short 'i'
+        <> metavar "DIR"
+        <> help "Input directory"
+    )
 
 pOutputDir :: Parser FilePath
 pOutputDir =
-      strOption
-        ( long "output"
-          <> short 'o'
-          <> metavar "DIR"
-          <> help "Output directory"
-        )
+  strOption
+    ( long "output"
+        <> short 'o'
+        <> metavar "DIR"
+        <> help "Output directory"
+    )
 
 pReplace :: Parser Bool
 pReplace =
-      switch
-        ( long "replace"
-          <> help "Replace output without prompting."
-        )
+  switch
+    ( long "replace"
+        <> help "Replace output without prompting."
+    )
 
 pConvertSingle :: Parser Options
 pConvertSingle =
@@ -97,22 +97,26 @@ pOptions :: Parser Options
 pOptions =
   subparser
     ( command
-      "convert"
-      ( info
-        ( helper <*> pConvertSingle)
-        ( progDesc "Convert a single markup source to html"))
-      <> command
-      "convert-dir"
-      ( info
-        ( helper <*> pConvertDir)
-        ( progDesc "Convert a directory of markup source files to html")))
+        "convert"
+        ( info
+            (helper <*> pConvertSingle)
+            (progDesc "Convert a single markup source to html")
+        )
+        <> command
+          "convert-dir"
+          ( info
+              (helper <*> pConvertDir)
+              (progDesc "Convert a directory of markup source files to html")
+          )
+    )
 
 opts :: ParserInfo Options
 opts =
-  info (helper <*> pOptions)
+  info
+    (helper <*> pOptions)
     ( fullDesc
-      <> header "hs-blog-gen - a static blog generator"
-      <> progDesc "Convert markup files or directories to html"
+        <> header "hs-blog-gen - a static blog generator"
+        <> progDesc "Convert markup files or directories to html"
     )
 
 parse :: IO Options

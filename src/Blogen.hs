@@ -1,14 +1,15 @@
 module Blogen
-  ( process
-  , convertSingle
-  , convertDirectory
+  ( process,
+    convertSingle,
+    convertDirectory,
   )
-  where
+where
 
 import qualified Blogen.Convert
+import qualified Blogen.Directory
 import qualified Blogen.Html
 import qualified Blogen.Markup
-import           System.IO      (Handle, hGetContents, hPutStrLn)
+import           System.IO        (Handle, hGetContents, hPutStrLn)
 
 process :: Blogen.Html.Title -> String -> String
 process title content = Blogen.Html.render (Blogen.Convert.convert title (Blogen.Markup.parse content))
@@ -19,4 +20,4 @@ convertSingle title input output = do
   hPutStrLn output (process title content)
 
 convertDirectory :: FilePath -> FilePath -> IO ()
-convertDirectory = error "Not implemented."
+convertDirectory = Blogen.Directory.convertDirectory

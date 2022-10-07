@@ -11,7 +11,6 @@ main =
     options <- parse
     case options of
       ConvertDir input output _ -> Blogen.convertDirectory input output
-
       ConvertSingle input output forceReplace -> do
         (title, inputHandle) <-
           case input of
@@ -28,14 +27,13 @@ main =
               shouldOpenFile <-
                 if forceReplace
                   then pure True
-                  else if exists
-                    then confirm
-                    else pure True
+                  else
+                    if exists
+                      then confirm
+                      else pure True
               if shouldOpenFile
-                then
-                  openFile file WriteMode
-                else
-                  exitFailure
+                then openFile file WriteMode
+                else exitFailure
 
         Blogen.convertSingle title inputHandle outputHandle
         hClose inputHandle

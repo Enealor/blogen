@@ -1,6 +1,6 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 module Blogen.Html.Internal where
-import GHC.Natural (Natural)
+
+import           GHC.Natural (Natural)
 
 -- * Types
 
@@ -11,14 +11,14 @@ newtype Html = Html String
 --   be embedded into an html document.
 newtype Structure = Structure String
 
--- | Html type representing the content that can be passed to a structure.
-newtype Content = Content String
-
 instance Semigroup Structure where
   Structure a <> Structure b = Structure (a <> b)
 
 instance Monoid Structure where
   mempty = empty_
+
+-- | Html type representing the content that can be passed to a structure.
+newtype Content = Content String
 
 -- | Html type alias for Title.
 type Title = String
@@ -30,10 +30,11 @@ type Title = String
 html_ :: Title -> Structure -> Html
 html_ title content =
   Html
-    (el "html"
-      ( el "head" (el "title" (escape title))
-      <> el "body" (getStructureString content)
-      )
+    ( el
+        "html"
+        ( el "head" (el "title" (escape title))
+            <> el "body" (getStructureString content)
+        )
     )
 
 -- | Wraps content in a p tag.
@@ -121,17 +122,15 @@ elAttr tagName tagAttrs content = "<" <> tagName <> " " <> tagAttrs <> ">" <> co
 -- | Replaces html specific characters with "safe" versions.
 escape :: String -> String
 escape =
-  let
-    escapeChar c =
-      case c of
-        '<'  -> "&lt;"
-        '>'  -> "&gt;"
-        '&'  -> "&amp;"
-        '"'  -> "&quot;"
-        '\'' -> "&#39;"
-        _    -> [c]
-  in
-    concatMap escapeChar
+  let escapeChar c =
+        case c of
+          '<'  -> "&lt;"
+          '>'  -> "&gt;"
+          '&'  -> "&amp;"
+          '"'  -> "&quot;"
+          '\'' -> "&#39;"
+          _    -> [c]
+   in concatMap escapeChar
 
 -- | Wraps a structure for use in a list.
 listItemWrap :: Structure -> Structure
@@ -144,4 +143,3 @@ toListStructure = Structure . concatMap (el "li" . getStructureString)
 -- -- Initial recursive approach
 -- toListStructure (i:is) = append_ (listItemWrap i) (toListStructure is)
 -- toListStructure [] = Structure ""
-
